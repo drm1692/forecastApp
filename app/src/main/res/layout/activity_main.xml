@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black_shade_1"
+    tools:context=".MainActivity">
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/loadingBar"
+        android:visibility="visible"
+        android:layout_centerInParent="true"
+        />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/RLHome"
+            android:visibility="gone"
+            >
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@color/black_shade_1"
+                android:id="@+id/bgImage"
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="City Name"
+                android:textAlignment="center"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:layout_marginTop="30dp"
+                android:padding="20dp"
+                android:textSize="18sp"
+                android:id="@+id/TVCityName"
+                />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:id="@+id/LLEdt"
+                android:layout_below="@id/TVCityName"
+                android:weightSum="5"
+                >
+               <com.google.android.material.textfield.TextInputLayout
+                   android:layout_width="0dp"
+                   android:layout_height="wrap_content"
+                   android:id="@+id/TILCity"
+                   android:layout_marginTop="10dp"
+                   android:layout_weight="4.5"
+                   android:background="@android:color/transparent"
+                   android:hint="Enter city name"
+                   android:padding="5dp"
+                   app:hintTextColor="@color/white"
+                   android:textColorHint="@color/white"
+                   >
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:id="@+id/EDtCity"
+                        android:importantForAutofill="no"
+                        android:inputType="text"
+                        android:singleLine="true"
+                        android:textColor="@color/white"
+                        android:textSize="14sp"
+                        android:background="@android:color/transparent"
+                        />
+               </com.google.android.material.textfield.TextInputLayout>
+                
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:id="@+id/IVSearch"
+                    android:layout_margin="10dp"
+                    android:layout_gravity="center"
+                    android:background="@android:color/transparent"
+                    android:src="@drawable/search"
+                    app:tint="@color/white" />
+                
+            </LinearLayout>
+            
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/TVTemperature"
+                android:layout_below="@id/LLEdt"
+                android:layout_margin="10dp"
+                android:gravity="center_horizontal"
+                android:padding="5dp"
+                android:text="23"
+                android:textColor="@color/white"
+                android:textSize="70dp"
+                />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/IVIcon"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/TVTemperature"
+                android:layout_margin="10dp"
+                android:src="@mipmap/ic_launcher"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/TVCondition"
+                android:layout_margin="10dp"
+                android:gravity="center"
+                android:textAlignment="center"
+                android:text="Condition"
+                android:textColor="@color/white"
+                android:layout_below="@id/IVIcon"
+                />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/TVTodayWeather"
+                android:layout_margin="8dp"
+                android:layout_marginBottom="10dp"
+                android:text="Today's weather forecast"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:layout_above="@id/RVWeather"
+                />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/RVWeather"
+                android:layout_alignParentBottom="true"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                />
+
+            
+        </RelativeLayout>
+
+</RelativeLayout>
