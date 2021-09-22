@@ -1,6 +1,8 @@
 package com.example.forecast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -9,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -17,6 +20,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
@@ -30,10 +34,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.ServerError;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -42,6 +49,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.squareup.picasso.provider.PicassoProvider;
@@ -51,6 +59,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -93,12 +102,16 @@ public class MainActivity extends AppCompatActivity {
         searchIV = findViewById(R.id.IVSearch);
         weatherRv = findViewById(R.id.RVWeather);
 
-        weatherRVModalArrayList = new ArrayList<>();
+        weatherRVModalArrayList = new ArrayList<weatherRVModal>();
         weatherRVAdapter = new weatherRVAdapter(this, weatherRVModalArrayList);
         weatherRv.setAdapter(weatherRVAdapter);
 
         mfusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        getLocation();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            getLocation();
+        } else {
+            Toast.makeText(this, "Your device does not support location API", Toast.LENGTH_SHORT).show();
+        }
 
         searchIV.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,19 +136,18 @@ public class MainActivity extends AppCompatActivity {
     private void getLocation() {
 
         if (checkPermissions()) {
-
             // check if location is enabled
             if (isLocationEnabled()) {
-
-                mfusedLocationClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+                mfusedLocationClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
                     @Override
-                    public void onComplete(@NonNull Task<Location> task) {
-                        Location location = task.getResult();
+                    public void onSuccess(Location location) {
                         if (location == null) {
                             requestNewLocationData();
                         } else {
-                            Toast.makeText(MainActivity.this,"latitude"+ location.getLatitude()+"logitude"+location.getLongitude(),Toast.LENGTH_SHORT);
+                            Toast.makeText(MainActivity.this, "latitude" + location.getLatitude() + "logitude" + location.getLongitude(), Toast.LENGTH_SHORT).show();
+//                            cityName = "Porbandar";
                             cityName = getCityName(location.getLongitude(), location.getLatitude());
+
                             getWeatherInfo(cityName);
                         }
                     }
@@ -243,13 +255,10 @@ public class MainActivity extends AppCompatActivity {
 
                     String city = addresses.get(0).getLocality();
                     if(city != null && !city.equals("")){
-
                         cityName = city;
                     }
                     else{
-
-//                        Log.d("TAG","City not found");
-//                        Toast.makeText(this,"User city not found,",Toast.LENGTH_LONG).show();
+                        Toast.makeText(this,"City not found,",Toast.LENGTH_LONG).show();
                     }
 
                 }
@@ -262,7 +271,7 @@ public class MainActivity extends AppCompatActivity {
     }
     private void getWeatherInfo(String cityName){
 
-        String URL = "http://api.weatherapi.com/v1/forecast.json?key=792b6257df8e46bdad754017210309&q=" + cityName + "&days=1&aqi=no&alerts=no";
+        String URL = "https://api.weatherapi.com/v1/forecast.json?key=792b6257df8e46bdad754017210309&q=" + cityName + "&days=1&aqi=no&alerts=no";
         cityTV.setText(cityName);
         RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, URL, null, new Response.Listener<JSONObject>() {
@@ -281,11 +290,9 @@ public class MainActivity extends AppCompatActivity {
                     PicassoProvider.get().load("http:".concat(conditionIcon)).into(iconIV);
                     conditionTV.setText(condition);
                     if(isDay == 1){
-
                         PicassoProvider.get().load("https://png.pngtree.com/background/20210716/original/pngtree-blue-gradient-beautiful-early-morning-sky-picture-image_1344648.jpg").into(backIv);
                     }
                     else{
-
                         PicassoProvider.get().load("https://png.pngtree.com/background/20210714/original/pngtree-flat-wind-day-and-night-2-picture-image_1210654.jpg").into(backIv);
                     }
 
@@ -294,7 +301,6 @@ public class MainActivity extends AppCompatActivity {
                     JSONArray hourArray = forecast0.getJSONArray("hour");
 
                     for (int i = 0; i < hourArray.length();i++){
-
                         JSONObject hourObj = hourArray.getJSONObject(i);
                         String time = hourObj.getString("time");
                         String temper = hourObj.getString("temp_c");
@@ -306,6 +312,7 @@ public class MainActivity extends AppCompatActivity {
                     weatherRVAdapter.notifyDataSetChanged();
 
                 } catch (JSONException e) {
+                    Toast.makeText(MainActivity.this, "Something went wrong fetching weather", Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
             }
@@ -318,6 +325,4 @@ public class MainActivity extends AppCompatActivity {
 
         requestQueue.add(jsonObjectRequest);
     }
-
-
 }

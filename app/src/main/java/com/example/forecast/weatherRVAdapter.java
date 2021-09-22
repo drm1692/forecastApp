@@ -1,6 +1,8 @@
 package com.example.forecast;
 
 import android.content.Context;
+import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,7 +41,12 @@ public class weatherRVAdapter extends RecyclerView.Adapter<weatherRVAdapter.View
 
         weatherRVModal modal = weatherRVModalArrayList.get(position);
         holder.temperatureTV.setText(modal.getTemperature() + "°C");
-        PicassoProvider.get().load("http:".concat(modal.getIcon())).into(holder.conditionIV);
+        String iconUrl = "https:" + modal.getIcon();
+
+        Log.d("DA", iconUrl);
+        PicassoProvider.get().load(iconUrl).into(holder.conditionIV);
+//        PicassoProvider.get().load("https://cdn.weatherapi.com/weather/64x64/night/353.png").into(holder.conditionIV);
+
         holder.windTV.setText(modal.getWindSpeed() + "km/h");
 
         SimpleDateFormat input = new SimpleDateFormat("yyyy-MM-dd hh:mm");
@@ -70,7 +77,8 @@ public class weatherRVAdapter extends RecyclerView.Adapter<weatherRVAdapter.View
             windTV = itemView.findViewById(R.id.TVWindSpeed);
             temperatureTV = itemView.findViewById(R.id.TVTemperature);
             timeTV = itemView.findViewById(R.id.TVTime);
-            conditionIV = itemView.findViewById(R.id.TVCondition);
+            conditionIV = itemView.findViewById(R.id.IVCondition);
+
         }
     }
 }
